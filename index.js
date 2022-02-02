@@ -16,7 +16,7 @@ const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
 
 client.once('ready', () => {
 //  client.user.setStatus('idle');
-  client.user.setPresence({ activity: { name: "o!help" }, status: "idle"} )
+  client.user.setPresence({ activities: [{ name: 'o!help' }], status: 'online' });
 	console.log('Bot is online');
   const channel = client.channels.cache.get('935144122019373086');
   channel.send('I am online');
@@ -28,15 +28,6 @@ if(message.content === "ping"){
   message.channel.send("pong")
 }
 
-
-
 })
 
 client.login(process.env.token);
-
-/*smth
-
-
-
-jjhu
-help*/
