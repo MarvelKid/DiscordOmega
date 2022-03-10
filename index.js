@@ -52,3 +52,4 @@ if(message.content === "ping"){
 });
 
 client.login(process.env.token);
+//ARGH!!!!!!!!!!!!!!!!!!!!!!!!!!!!
