@@ -1,55 +1,43 @@
 const express = require("express");
 const app = express();
-const prefix = "o!"
-
 app.listen(3000, () => {
-  console.log("Project is running!");
+  console.log("Test running");
 })
 
 app.get("/", (req, res) => {
-  res.send("Hello world!")
+  res.send("Hello World!");
 })
 
-const { Client, Intents } = require('discord.js');
-
-const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
-
+const Discord = require("discord.js")
+const client = new Discord.Client({
+  intents: ["GUILDS", "GUILD_MESSAGES"]
+});
 client.once('ready', () => {
-//   client.user.setStatus('idle');
+
   client.user.setPresence({ activities: [{ name: 'o!help' }], status: 'idle' });
 	console.log('Bot is online');
   const channel = client.channels.cache.get('935144122019373086');
   channel.send('I am online');
 });
 
-client.on('message', message => {
-  const user = message.mentions.users.first();
-if(message.content === "ping"){
-  message.channel.send("pong")
-} else if (message.content.startsWith("o!ban")) {if (message.member.hasPermission("BAN_MEMBERS")) {
+const fs = require("fs");
+const prefix = "o!"
+client.commands = new Discord.Collection();
+const commands = fs.readdirSync("./commands").filter(file => file.endsWith(".js"));
+for(file of commands){
+  const commandName = file.split(".")[0]
+  const command = require(`./commands/${commandName}`)
+  client.commands.set(commandName, command)
+}
 
-  
-    if (user) {
-        try {
-          mesasge.guild.members.ban(user);
-        } catch {
-            message.reply("I do not have permissions to ban" + user);
-        }
-    } else {
-        message.reply("You do not have permissions to ban" + user);
-    }
-}} else if (message.content.startsWith("o!kick")) {if (message.member.hasPermission("KICK_MEMBERS")) {
-    if (user) {
-        try {
-            user.kick();
-        } catch {
-            message.reply("I do not have permissions to kick " + user);
-        }
-    } else {
-        message.reply("You do not have permissions to kick " + user);
-    }
-}}
-});
+client.on("messageCreate", message => {
+  if(message.content.startsWith(prefix)){
+    const args = message.content.slice(prefix.length).trim().split(/ +/g)
+    const commandName = args.shift()
+    const command = client.commands.get(commandName)
+    if(!command) return message.channel.send({content: "What are you talking about mate? There ain't a command like that."})
+    command.run(client, message, args)
+  }
+})
 
 client.login(process.env.token);
-//ARGH!!!!!!!!!!!!!!!!!!!!!!!!!!!!
